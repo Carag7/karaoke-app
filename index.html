@@ -1,114 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a0f1a" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="description" content="Karaoke App - Stream JW Songs with Synchronized Lyrics" />
-    <link rel="manifest" href="manifest.json" />
-    <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="icon.svg" />
-    <link rel="stylesheet" href="style.css" />
-    <title>Karaoke - JW Songs</title>
-  </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand">
-          <div class="brand-icon">🎤</div>
-          <div class="brand-text">
-            <small>KARAOKE</small>
-            <h1>Songbook</h1>
-          </div>
-        </div>
-
-        <div class="search-wrap">
-          <input id="songSearch" type="search" placeholder="Search song number or title..." />
-        </div>
-
-        <div class="loading-status">
-          <p id="loadingMessage">Loading songs from JW.ORG...</p>
-        </div>
-
-        <div class="filter-group">
-          <div class="row">
-            <span>Categories</span>
-            <button id="clearFiltersBtn" class="small-btn" type="button">All</button>
-          </div>
-          <div id="categoryFilters" class="chip-list"></div>
-        </div>
-
-        <div class="toggle-row">
-          <button id="favoritesToggle" class="primary-btn" type="button" aria-pressed="false">
-            Favorites Only
-          </button>
-        </div>
-
-        <div class="subpanel">
-          <div class="row">
-            <span>Recently Played</span>
-          </div>
-          <ul id="recentSongs" class="recent-list"></ul>
-        </div>
-
-        <div class="subpanel list-panel">
-          <div class="row">
-            <span>Songs</span>
-            <strong id="songCount">0</strong>
-          </div>
-          <ul id="songList" class="song-list"></ul>
-        </div>
-      </aside>
-
-      <main class="main-panel">
-        <header class="topbar">
-          <button id="installBtn" class="ghost-btn hidden" type="button">Install App</button>
-          <button id="toggleFullscreen" class="ghost-btn" type="button">Fullscreen</button>
-        </header>
-
-        <section class="meta card">
-          <div class="meta-header">
-            <span>CURRENT SONG</span>
-            <button id="favoriteBtn" class="fav-btn" type="button" aria-label="Add to favorites">♡</button>
-          </div>
-          <h2 id="currentTitle">Select a song</h2>
-          <p id="currentStatus">Choose a song from the list to play.</p>
-        </section>
-
-        <section class="player card">
-          <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
-
-          <div class="player-row">
-            <button id="playPauseBtn" class="play-btn" type="button" aria-label="Play">▶</button>
-
-            <div class="time-box">
-              <div class="time-row">
-                <span id="currentTime">0:00</span>
-                <span id="duration">0:00</span>
-              </div>
-
-              <input
-                id="progressBar"
-                class="progress-input"
-                type="range"
-                min="0"
-                max="100"
-                value="0"
-                step="0.1"
-                aria-label="Progress bar"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section class="lyrics-panel card" aria-label="Lyrics">
-          <div id="lyrics" class="lyrics"></div>
-        </section>
-      </main>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0f1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Karaoke Player</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <h1>🎤 Karaoke</h1>
+      <input type="search" id="songSearch" placeholder="Search songs..." class="search-input" />
+      <div class="song-list-container">
+        <h3>Songs (<span id="songCount">0</span>)</h3>
+        <ul id="songList" class="song-list"></ul>
+      </div>
     </div>
 
-    <script src="app-stream.js"></script>
-  </body>
+    <div class="main-content">
+      <div class="player-section">
+        <div class="song-info">
+          <h2 id="currentTitle">Select a song</h2>
+          <p id="currentStatus">Ready</p>
+        </div>
+
+        <div class="player-controls">
+          <button id="playBtn" class="btn play-btn">▶ PLAY</button>
+          <div class="progress-section">
+            <span id="currentTime">0:00</span>
+            <input type="range" id="progressBar" class="progress-bar" min="0" max="100" value="0" />
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <audio id="audioPlayer" crossorigin="anonymous"></audio>
+      </div>
+
+      <div class="lyrics-section">
+        <div id="lyricsList" class="lyrics-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="karaoke.js"></script>
+</body>
 </html>
