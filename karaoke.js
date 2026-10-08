@@ -3,7 +3,8 @@ const state = {
   songs: [],
   currentIndex: -1,
   isPlaying: false,
-  searchQuery: ''
+  searchQuery: '',
+  lyrics: []
 };
 
 // DOM Elements
@@ -21,204 +22,214 @@ const elements = {
   lyricsList: document.getElementById('lyricsList')
 };
 
-// Format time
 function formatTime(seconds) {
-  if (!Number.isFinite(seconds)) return '0:00';
+  if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${String(secs).padStart(2, '0')}`;
 }
 
-// Load songs from JSON
 async function loadSongs() {
   try {
-    const response = await fetch('songs.json');
+    const response = await fetch('songs.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
+    if (!Array.isArray(data)) throw new Error('songs.json is not an array');
     state.songs = data;
-    console.log(`Loaded ${state.songs.length} songs`);
+    elements.currentStatus.textContent = `${state.songs.length} songs loaded`;
     renderSongList();
+    if (state.songs.length > 0) selectSong(0);
   } catch (error) {
     console.error('Error loading songs:', error);
-    elements.currentStatus.textContent = 'Error loading songs';
+    elements.currentStatus.textContent = `Error: ${error.message}`;
+    elements.currentTitle.textContent = 'Failed to load songs';
   }
 }
 
-// Render song list
 function renderSongList() {
   const query = state.searchQuery.toLowerCase();
-  const filtered = state.songs.filter(song => 
-    song.title.toLowerCase().includes(query) || 
-    (song.id && song.id.includes(query))
+  const filtered = state.songs.filter(song =>
+    (song.title && song.title.toLowerCase().includes(query)) ||
+    (song.id && song.id.toLowerCase().includes(query))
   );
 
-  elements.songList.innerHTML = '';
-  elements.songCount.textContent = filtered.length;
+  const displaySongs = query === '' ? state.songs : filtered;
 
-  filtered.forEach((song, index) => {
+  elements.songList.innerHTML = '';
+  elements.songCount.textContent = String(displaySongs.length);
+
+  displaySongs.forEach((song) => {
     const li = document.createElement('li');
     const btn = document.createElement('button');
+    btn.type = 'button';
     btn.className = 'song-btn';
-    btn.textContent = `${song.id || ''} - ${song.title}`;
-    btn.onclick = () => selectSong(state.songs.indexOf(song));
+    btn.textContent = `${song.id || '000'} - ${song.title}`;
+    btn.dataset.index = String(state.songs.indexOf(song));
+    btn.addEventListener('click', () => selectSong(state.songs.indexOf(song)));
+
+    if (state.currentIndex === state.songs.indexOf(song)) {
+      btn.classList.add('active');
+    }
+
     li.appendChild(btn);
     elements.songList.appendChild(li);
   });
 }
 
-// Select song
-function selectSong(index) {
+async function selectSong(index) {
   if (index < 0 || index >= state.songs.length) return;
-  
-  state.currentIndex = index;
+
   const song = state.songs[index];
-  
-  console.log('Selected song:', song);
-  
-  elements.currentTitle.textContent = song.title;
-  elements.currentStatus.textContent = 'Loaded - Ready to play';
-  
-  // Stop current playback
+  state.currentIndex = index;
+
+  elements.currentTitle.textContent = song.title || 'Unknown Song';
+  elements.currentStatus.textContent = 'Loading...';
   elements.audio.pause();
-  
-  // Set audio source
-  elements.audio.src = song.audio;
+  elements.audio.src = song.audio || '';
   elements.audio.load();
-  
-  // Reset progress
+
   elements.progressBar.value = 0;
   elements.currentTime.textContent = '0:00';
   elements.duration.textContent = '0:00';
-  
-  // Load lyrics if available
+  elements.playBtn.textContent = '▶ PLAY';
+
   if (song.lyrics) {
-    loadLyrics(song.lyrics);
+    await loadLyrics(song.lyrics);
   } else {
-    elements.lyricsList.innerHTML = '<p>No lyrics available</p>';
+    elements.lyricsList.innerHTML = '<p class="no-lyrics">No lyrics available</p>';
+    state.lyrics = [];
   }
-  
-  // Highlight selected song
-  document.querySelectorAll('.song-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', i === state.songs.indexOf(song));
-  });
+
+  renderSongList();
+  elements.currentStatus.textContent = 'Ready - Click PLAY';
 }
 
-// Load lyrics
 async function loadLyrics(lyricsUrl) {
   try {
-    const response = await fetch(lyricsUrl);
+    const response = await fetch(lyricsUrl, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('Lyrics not found');
+    }
     const text = await response.text();
-    const lyrics = parseLrc(text);
-    renderLyrics(lyrics);
+    state.lyrics = parseLrc(text);
+    renderLyrics(state.lyrics);
   } catch (error) {
-    console.error('Error loading lyrics:', error);
-    elements.lyricsList.innerHTML = '<p>Could not load lyrics</p>';
+    console.warn('Could not load lyrics:', error);
+    state.lyrics = [];
+    elements.lyricsList.innerHTML = '<p class="no-lyrics">No lyrics available</p>';
   }
 }
 
-// Parse LRC format
 function parseLrc(text) {
-  const lines = text.split('\n');
+  if (!text) return [];
+  const lines = text.split(/\r?\n/);
   const lyrics = [];
-  
-  lines.forEach(line => {
+
+  lines.forEach((line) => {
     const match = line.match(/\[(\d+):(\d+(?:\.\d+)?)\](.*)/);
-    if (match) {
-      const minutes = parseInt(match[1]);
-      const seconds = parseFloat(match[2]);
-      const text = match[3].trim();
-      
-      if (text) {
-        lyrics.push({
-          time: minutes * 60 + seconds,
-          text: text
-        });
-      }
+    if (!match) return;
+
+    const minutes = parseInt(match[1], 10);
+    const seconds = parseFloat(match[2]);
+    const lyricText = match[3].trim();
+
+    if (lyricText) {
+      lyrics.push({ time: minutes * 60 + seconds, text: lyricText });
     }
   });
-  
+
   return lyrics.sort((a, b) => a.time - b.time);
 }
 
-// Render lyrics
 function renderLyrics(lyrics) {
+  elements.lyricsList.innerHTML = '';
+
   if (lyrics.length === 0) {
-    elements.lyricsList.innerHTML = '<p>No lyrics</p>';
+    elements.lyricsList.innerHTML = '<p class="no-lyrics">No lyrics available</p>';
     return;
   }
-  
-  elements.lyricsList.innerHTML = '';
+
   lyrics.forEach((lyric, index) => {
-    const div = document.createElement('div');
-    div.className = 'lyric-line';
-    div.dataset.index = index;
-    div.dataset.time = lyric.time;
-    div.textContent = lyric.text;
-    elements.lyricsList.appendChild(div);
+    const line = document.createElement('div');
+    line.className = 'lyric-line';
+    line.dataset.index = String(index);
+    line.dataset.time = String(lyric.time);
+    line.textContent = lyric.text;
+    elements.lyricsList.appendChild(line);
   });
 }
 
-// Update lyrics highlighting
 function updateLyricsHighlight() {
-  const currentTime = elements.audio.currentTime;
   const lines = document.querySelectorAll('.lyric-line');
-  
-  lines.forEach(line => {
+  if (!lines.length) return;
+
+  const currentTime = elements.audio.currentTime;
+  lines.forEach((line, index) => {
     const lineTime = parseFloat(line.dataset.time);
-    line.classList.toggle('active', 
-      currentTime >= lineTime && 
-      currentTime < (parseFloat(lines[parseInt(line.dataset.index) + 1]?.dataset.time) || Infinity)
-    );
+    const nextTime = index < lines.length - 1 ? parseFloat(lines[index + 1].dataset.time) : Infinity;
+    const active = currentTime >= lineTime && currentTime < nextTime;
+    line.classList.toggle('active', active);
+    if (active) line.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 }
 
-// Play/Pause
 function togglePlay() {
-  if (!elements.audio.src) return;
-  
+  if (!elements.audio.src) {
+    elements.currentStatus.textContent = 'Please select a song';
+    return;
+  }
+
   if (elements.audio.paused) {
-    elements.audio.play().catch(e => {
-      console.error('Play error:', e);
-      elements.currentStatus.textContent = 'Error: Cannot play audio';
+    elements.audio.play().then(() => {
+      elements.playBtn.textContent = '❚❚ PAUSE';
+      elements.currentStatus.textContent = 'Playing...';
+    }).catch((err) => {
+      console.error('Play error:', err);
+      elements.currentStatus.textContent = 'Audio playback blocked';
     });
-    elements.playBtn.textContent = '⏸ PAUSE';
   } else {
     elements.audio.pause();
     elements.playBtn.textContent = '▶ PLAY';
+    elements.currentStatus.textContent = 'Paused';
   }
 }
 
-// Update progress
 function updateProgress() {
   const duration = elements.audio.duration || 0;
   const current = elements.audio.currentTime || 0;
-  
+
   if (duration > 0) {
-    elements.progressBar.max = duration;
-    elements.progressBar.value = current;
+    elements.progressBar.max = 100;
+    elements.progressBar.value = (current / duration) * 100;
   }
-  
+
   elements.currentTime.textContent = formatTime(current);
   elements.duration.textContent = formatTime(duration);
   updateLyricsHighlight();
 }
 
-// Seek
-function seek(e) {
-  const time = (e.target.value / e.target.max) * elements.audio.duration;
-  elements.audio.currentTime = time;
+function seek(event) {
+  if (!elements.audio.duration) return;
+  const percent = Number(event.target.value) / 100;
+  elements.audio.currentTime = elements.audio.duration * percent;
 }
 
 // Event listeners
-elements.playBtn.addEventListener('click', togglePlay);
 elements.songSearch.addEventListener('input', (e) => {
-  state.searchQuery = e.target.value;
+  state.searchQuery = e.target.value.trim().toLowerCase();
   renderSongList();
 });
+
+elements.playBtn.addEventListener('click', togglePlay);
 elements.progressBar.addEventListener('input', seek);
 elements.audio.addEventListener('timeupdate', updateProgress);
 elements.audio.addEventListener('ended', () => {
   elements.playBtn.textContent = '▶ PLAY';
+  elements.currentStatus.textContent = 'Finished';
+});
+elements.audio.addEventListener('error', (e) => {
+  console.error('Audio error', e);
+  elements.currentStatus.textContent = 'Audio could not be loaded';
 });
 
-// Initialize
 loadSongs();
