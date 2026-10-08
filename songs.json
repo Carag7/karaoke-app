@@ -1,26 +1,82 @@
 [
   {
     "id": "001",
-    "title": "Praise to the Lord, the Almighty",
-    "category": "Lobpreis",
-    "audio": "https://archive.org/download/hymn-praise-to-lord-almighty-1/hymn-praise-to-lord-almighty.mp3",
-    "lyrics": "https://raw.githubusercontent.com/Carag7/karaoke-app/main/lyrics/lied001.lrc",
+    "title": "SoundHelix Song 1",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "lyrics": "",
     "favorite": false
   },
   {
     "id": "002",
-    "title": "Jesus Loves Me",
-    "category": "Andacht",
-    "audio": "https://archive.org/download/jesus-loves-me-this-i-know/jesus-loves-me-this-i-know.mp3",
-    "lyrics": "https://raw.githubusercontent.com/Carag7/karaoke-app/main/lyrics/lied002.lrc",
+    "title": "SoundHelix Song 2",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "lyrics": "",
     "favorite": false
   },
   {
     "id": "003",
-    "title": "Amazing Grace",
-    "category": "Gemeindelied",
-    "audio": "https://archive.org/download/amazing-grace-hymn-1/amazing-grace-hymn.mp3",
-    "lyrics": "https://raw.githubusercontent.com/Carag7/karaoke-app/main/lyrics/lied003.lrc",
+    "title": "SoundHelix Song 3",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "004",
+    "title": "SoundHelix Song 4",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "005",
+    "title": "SoundHelix Song 5",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "006",
+    "title": "SoundHelix Song 6",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "007",
+    "title": "SoundHelix Song 7",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "008",
+    "title": "SoundHelix Song 8",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "009",
+    "title": "SoundHelix Song 9",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    "lyrics": "",
+    "favorite": false
+  },
+  {
+    "id": "010",
+    "title": "SoundHelix Song 10",
+    "category": "Test",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
+    "lyrics": "",
     "favorite": false
   }
 ]
