@@ -1,1 +1,26 @@
-[{"id": "001", "title": "Lied 1", "category": "Lobpreis", "audio": "songs/lied001.mp3", "lyrics": "songs/lied001.lrc", "favorite": false}, {"id": "002", "title": "Lied 2", "category": "Andacht", "audio": "songs/lied002.mp3", "lyrics": "songs/lied002.lrc", "favorite": true}, {"id": "003", "title": "Lied 3", "category": "Gemeindelied", "audio": "songs/lied003.mp3", "lyrics": "songs/lied003.lrc", "favorite": false}]
+[
+  {
+    "id": "001",
+    "title": "Praise to the Lord, the Almighty",
+    "category": "Lobpreis",
+    "audio": "https://archive.org/download/hymn-praise-to-lord-almighty-1/hymn-praise-to-lord-almighty.mp3",
+    "lyrics": "https://raw.githubusercontent.com/Carag7/karaoke-app/main/lyrics/lied001.lrc",
+    "favorite": false
+  },
+  {
+    "id": "002",
+    "title": "Jesus Loves Me",
+    "category": "Andacht",
+    "audio": "https://archive.org/download/jesus-loves-me-this-i-know/jesus-loves-me-this-i-know.mp3",
+    "lyrics": "https://raw.githubusercontent.com/Carag7/karaoke-app/main/lyrics/lied002.lrc",
+    "favorite": false
+  },
+  {
+    "id": "003",
+    "title": "Amazing Grace",
+    "category": "Gemeindelied",
+    "audio": "https://archive.org/download/amazing-grace-hymn-1/amazing-grace-hymn.mp3",
+    "lyrics": "https://raw.githubusercontent.com/Carag7/karaoke-app/main/lyrics/lied003.lrc",
+    "favorite": false
+  }
+]
